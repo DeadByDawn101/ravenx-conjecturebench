@@ -86,11 +86,27 @@ of sovereign AI infrastructure and model IP protection.
 
 ## Dataset
 
-### ConjectureBench (upstream)
-- 457 paired informal-formal statements from PutnamBench + CombiBench
-- Reformulated to ensure no conjecture leaks in problem statements
-- Three solution types: numerical (39%), algebraic (36.1%), proof (24.9%)
-- Source: https://github.com/huawei-noah/ConjectureBench
+### Unified Benchmark (5 HF Sources)
+
+The original ConjectureBench (Huawei Noah's Ark Lab) is not yet public.
+We built a unified replacement from 5 HuggingFace datasets covering
+the same problem space:
+
+| Source | Problems | Content |
+|--------|----------|---------|
+| **Tonic/MiniF2F** | ~488 | AMC/AIME/IMO, informal + Lean 4 pairs |
+| **amitayusht/PutnamBench** | ~1300 | Putnam Competition 1965-2023, Lean 4 |
+| **AI-MO/NuminaMath-LEAN** | 2000 (sampled from 100K) | Competition math, Lean 4 + proofs |
+| **AI-MO/minif2f_test** | ~244 | Corrected MiniF2F formalisations |
+| **InternLM/Lean-GitHub** | 1000 (sampled) | Compiled GitHub Lean repos |
+
+Total: ~5,000+ unified problems in ConjectureBench format.
+
+Run `python scripts/download_dataset.py` to pull all sources and
+generate:
+- `data/unified_bench.json` — all problems
+- `data/conjecturebench.json` — conjecture-ready subset (has informal + conjecture)
+- `data/quick_test.json` — 50 problems for smoke testing
 
 ### RavenX Security Conjectures (downstream, in progress)
 - Security protocol properties formalised in Lean 4
@@ -122,7 +138,8 @@ pip install -e .
 ### Run Evaluation
 
 ```bash
-# Download ConjectureBench dataset
+# Download all 5 HF datasets and build unified benchmark
+pip install datasets
 python scripts/download_dataset.py
 
 # Run LEAN-FIRE conjecture generation (local MLX inference)
