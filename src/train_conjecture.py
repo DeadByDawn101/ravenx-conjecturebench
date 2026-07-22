@@ -61,21 +61,37 @@ def train_lora(model: str, data_dir: str, output: str,
                iters: int = 500, lora_rank: int = 16,
                lr: float = 1e-5, batch: int = 4):
     """Run MLX LoRA fine-tuning."""
+    # Write LoRA config YAML (mlx_lm 0.29+ uses -c for rank/alpha)
+    config_path = Path(output).parent / "lora_config.yaml"
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    import yaml
+    config = {
+        "fine_tune_type": "lora",
+        "lora_parameters": {
+            "rank": lora_rank,
+            "alpha": lora_rank * 2,
+            "dropout": 0.05,
+            "scale": 2.0,
+        },
+    }
+    with open(config_path, "w") as f:
+        yaml.dump(config, f)
+
     cmd = [
-        "python", "-m", "mlx_lm.lora",
+        "python", "-m", "mlx_lm", "lora",
         "--model", model,
         "--train",
         "--data", data_dir,
         "--adapter-path", output,
         "--iters", str(iters),
-        "--lora-layers", "16",
-        "--lora-rank", str(lora_rank),
+        "--num-layers", "16",
         "--learning-rate", str(lr),
         "--batch-size", str(batch),
         "--val-batches", "25",
         "--steps-per-eval", "100",
         "--steps-per-report", "10",
         "--max-seq-length", "2048",
+        "-c", str(config_path),
     ]
     print(f"MLX LoRA training: {model}, {iters} iters, rank {lora_rank}")
     subprocess.run(cmd, check=True)
