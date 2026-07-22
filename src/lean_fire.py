@@ -28,6 +28,24 @@ except ImportError:
     HAS_MLX = False
 
 
+def strip_think_blocks(text: str) -> str:
+    """Strip Qwen3's <think>...</think> reasoning blocks from output.
+    
+    Qwen3 wraps internal reasoning in <think> tags by default.
+    We want the reasoning for logging but need clean output for
+    Lean code extraction.
+    """
+    import re
+    # Extract everything after the last </think> tag
+    parts = re.split(r'</think>', text, flags=re.DOTALL)
+    if len(parts) > 1:
+        # Return content after final </think>, stripped
+        clean = parts[-1].strip()
+        return clean if clean else text.strip()
+    # No think tags found — return as-is
+    return text.strip()
+
+
 COT_SYSTEM = (
     "You are an advanced assistant specializing in formal mathematics and "
     "Lean 4 theorem proving. You have extensive expertise in translating "
@@ -125,7 +143,7 @@ class LeanFireEngine:
             )
         return ""
 
-    def _gen(self, system: str, user: str) -> str:
+    def _gen(self, system: str, user: str, strip_think: bool = True) -> str:
         messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
@@ -133,10 +151,11 @@ class LeanFireEngine:
         prompt = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-        return generate(
+        raw = generate(
             self.model, self.tokenizer, prompt=prompt,
             max_tokens=self.max_tokens, verbose=False,
         )
+        return strip_think_blocks(raw) if strip_think else raw
 
     def chain_of_thought(self, statement: str) -> str:
         return self._gen(COT_SYSTEM, COT_USER.format(
@@ -191,6 +210,21 @@ class LeanFireEngine:
             "formalisation": formal,
             "elapsed_seconds": round(time.time() - t0, 2),
         }
+
+    def _gen_with_reasoning(self, system: str, user: str) -> tuple:
+        """Generate and return (clean_output, raw_with_thinking)."""
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ]
+        prompt = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        raw = generate(
+            self.model, self.tokenizer, prompt=prompt,
+            max_tokens=self.max_tokens, verbose=False,
+        )
+        return strip_think_blocks(raw), raw
 
 
 def main():
