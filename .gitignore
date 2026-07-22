@@ -6,6 +6,6 @@ dist/
 build/
 results/
 models/
-data/*.json
-data/*.jsonl
+# data/*.json  # keep test data in repo
+# data/*.jsonl
 .DS_Store

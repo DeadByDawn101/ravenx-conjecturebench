@@ -1,0 +1,62 @@
+[
+  {
+    "name": "putnam_2004_a1",
+    "informal_statement": "Basketball star Shanille O'Keal's team statistician keeps track of the number, S(N), of successful free throws she has made in her first N attempts of the season. Early in the season, S(N) was less than 80% of N, but by the end of the season, S(N) was more than 80% of N. Prove or disprove that there necessarily was a moment in between when S(N) was exactly 80% of N.",
+    "conjecture": "abbrev conjecture : Prop := True",
+    "solution_type": "proof"
+  },
+  {
+    "name": "putnam_2009_b2",
+    "informal_statement": "A game involves jumping to the right on the real number line. If a and b are real numbers and b > a, the cost of jumping from a to b is b^3 - ab^2. For what real numbers c can one travel from 0 to 1 in a finite number of jumps with total cost exactly c?",
+    "conjecture": "abbrev conjecture : Set R := Ioc (1 / 3) 1",
+    "solution_type": "algebraic"
+  },
+  {
+    "name": "putnam_2013_b2",
+    "informal_statement": "Let C be the union of C_N for N=1 to infinity, where C_N denotes the set of cosine polynomials of the form f(x) = 1 + sum(a_n * cos(2*pi*n*x), n=1..N) for which f(x) >= 0 for all real x and a_n = 0 whenever n is a multiple of 3. Determine the maximum value of f(0) as f ranges through C, and prove that this maximum is attained.",
+    "conjecture": "abbrev conjecture : R := 3",
+    "solution_type": "numerical"
+  },
+  {
+    "name": "putnam_2014_a2",
+    "informal_statement": "Let A be the n x n matrix whose entry in the i-th row and j-th column is 1/min(i,j) for 1 <= i, j <= n. Compute det(A).",
+    "conjecture": "abbrev conjecture : (fun n : N => (-1)^(n - 1) / ((n - 1)! * n!))",
+    "solution_type": "algebraic"
+  },
+  {
+    "name": "putnam_2015_a2",
+    "informal_statement": "Let a_0 = 1, a_1 = 2, and a_n = 4*a_(n-1) - a_(n-2) for n >= 2. Find an odd prime factor of a_2015.",
+    "conjecture": "abbrev conjecture : N := 181",
+    "solution_type": "numerical"
+  },
+  {
+    "name": "putnam_2023_a1",
+    "informal_statement": "For a positive integer n, let f_n(x) = cos(x) * cos(2x) * cos(3x) * ... * cos(nx). Find the smallest n such that |f_n''(0)| > 2023.",
+    "conjecture": "abbrev conjecture : N := 9",
+    "solution_type": "numerical"
+  },
+  {
+    "name": "putnam_2022_b1",
+    "informal_statement": "Suppose that x, y, and z are positive real numbers satisfying the equation (2023)^x + (2023)^y = (2023)^z. Prove that xyz > 1.",
+    "conjecture": "abbrev conjecture : Prop := True",
+    "solution_type": "proof"
+  },
+  {
+    "name": "test_quadratic",
+    "informal_statement": "What are the real roots of x^2 - 4x = 0?",
+    "conjecture": "abbrev conjecture : Set R := {0, 4}",
+    "solution_type": "algebraic"
+  },
+  {
+    "name": "test_pigeonhole",
+    "informal_statement": "How many people must be in a group for at least two of them to be born in the same month?",
+    "conjecture": "abbrev conjecture : N := 13",
+    "solution_type": "numerical"
+  },
+  {
+    "name": "test_fibonacci",
+    "informal_statement": "What is the 10th Fibonacci number, where F(1) = 1, F(2) = 1, and F(n) = F(n-1) + F(n-2) for n >= 3?",
+    "conjecture": "abbrev conjecture : N := 55",
+    "solution_type": "numerical"
+  }
+]
