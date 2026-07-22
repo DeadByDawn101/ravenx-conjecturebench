@@ -122,7 +122,7 @@ theorem {name}"""
 class LeanFireEngine:
     """LEAN-FIRE inference engine using MLX for local Apple Silicon."""
 
-    def __init__(self, model_path: str, max_tokens: int = 2048):
+    def __init__(self, model_path: str, max_tokens: int = 4096):
         if not HAS_MLX:
             raise ImportError("MLX required. pip install mlx mlx-lm")
         print(f"Loading model: {model_path}")
@@ -144,13 +144,26 @@ class LeanFireEngine:
         return ""
 
     def _gen(self, system: str, user: str, strip_think: bool = True) -> str:
+        # Append /no_think to disable Qwen3's internal reasoning blocks.
+        # We handle reasoning explicitly via our CoT/LoT pipeline —
+        # the model's own <think> blocks consume tokens without producing
+        # usable Lean output.
+        user_msg = user.rstrip() + "\n/no_think"
         messages = [
             {"role": "system", "content": system},
-            {"role": "user", "content": user},
+            {"role": "user", "content": user_msg},
         ]
-        prompt = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        try:
+            # Try with enable_thinking=False (newer tokenizers support this)
+            prompt = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=False,
+            )
+        except TypeError:
+            # Fallback for older tokenizers
+            prompt = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+            )
         raw = generate(
             self.model, self.tokenizer, prompt=prompt,
             max_tokens=self.max_tokens, verbose=False,
@@ -233,7 +246,7 @@ def main():
     p.add_argument("--dataset", required=True)
     p.add_argument("--output", required=True)
     p.add_argument("--setting", choices=["seen", "unseen"], default="unseen")
-    p.add_argument("--max-tokens", type=int, default=2048)
+    p.add_argument("--max-tokens", type=int, default=4096)
     p.add_argument("--limit", type=int, default=None)
     args = p.parse_args()
 
